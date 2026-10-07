@@ -4,17 +4,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Winner's Circle — Mines</title>
+<title>1win Mines Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
---bg-color: #0f172a;
+--bg-color: #0b1120;
 --card-bg: #1e293b;
+--accent-blue: #0284c7;
 --accent-green: #22c55e;
 --text-main: #f8fafc;
 --text-sub: #94a3b8;
 --tile-bg: #334155;
---tile-hover: #475569;
 }
 
 * {
@@ -31,196 +31,224 @@ color: var(--text-main);
 display: flex;
 flex-direction: column;
 align-items: center;
+justify-content: center;
 min-height: 100vh;
 padding: 16px;
 }
 
-.header {
-text-align: center;
-margin-bottom: 20px;
-}
-
-.header h1 {
-font-size: 20px;
+/* 1win Partner Badge */
+.brand-badge {
+position: fixed;
+top: 12px;
+left: 12px;
+background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+color: #fff;
+font-size: 11px;
 font-weight: 800;
-letter-spacing: 1px;
-color: #38bdf8;
-text-transform: uppercase;
-}
-
-.header p {
-font-size: 12px;
-color: var(--text-sub);
-margin-top: 2px;
-}
-
-.card {
-background: var(--card-bg);
-border-radius: 16px;
-padding: 16px;
-width: 100%;
-max-width: 400px;
-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-margin-bottom: 16px;
-}
-
-.balance-box {
+padding: 6px 12px;
+border-radius: 20px;
+box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 display: flex;
-justify-content: space-between;
 align-items: center;
-background: rgba(0, 0, 0, 0.2);
-padding: 12px 16px;
-border-radius: 12px;
-margin-bottom: 16px;
+gap: 6px;
+z-index: 100;
+text-decoration: none;
+letter-spacing: 0.5px;
 }
 
-.balance-label {
-font-size: 13px;
-color: var(--text-sub);
+.brand-badge span {
+background: #fff;
+color: #0284c7;
+padding: 2px 5px;
+border-radius: 4px;
+font-size: 9px;
 }
 
-.balance-value {
-font-size: 18px;
-font-weight: 700;
-color: var(--accent-green);
-}
-
-.controls-grid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 12px;
-margin-bottom: 16px;
-}
-
-.input-group {
+.container {
+width: 100%;
+max-width: 380px;
 display: flex;
 flex-direction: column;
-gap: 6px;
+align-items: center;
+gap: 16px;
 }
 
-.input-group label {
-font-size: 12px;
-color: var(--text-sub);
-}
-
-.input-group input, .input-group select {
-background: var(--tile-bg);
-border: 1px solid #475569;
-color: #fff;
-padding: 10px;
-border-radius: 8px;
-font-size: 14px;
-font-weight: 600;
-outline: none;
-}
-
-.btn-start {
-width: 100%;
-background: var(--accent-green);
-color: #000;
-font-weight: 700;
-font-size: 16px;
-border: none;
-padding: 14px;
+.status-box {
+background: var(--card-bg);
 border-radius: 12px;
-cursor: pointer;
-box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+padding: 12px 20px;
+width: 100%;
+text-align: center;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.status-text {
+font-size: 14px;
+font-weight: 700;
+color: #38bdf8;
+letter-spacing: 0.5px;
 }
 
 .mines-grid {
 display: grid;
 grid-template-columns: repeat(5, 1fr);
 gap: 8px;
-margin-top: 16px;
+width: 100%;
+background: var(--card-bg);
+padding: 12px;
+border-radius: 16px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .tile {
 aspect-ratio: 1;
 background: var(--tile-bg);
-border-radius: 8px;
+border-radius: 10px;
 display: flex;
 align-items: center;
 justify-content: center;
-font-weight: bold;
-font-size: 18px;
+font-weight: 800;
+font-size: 13px;
 cursor: pointer;
+transition: all 0.2s ease;
+color: #fff;
+border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.nav-tabs {
-display: flex;
-gap: 8px;
+.tile.active-star {
+background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+transform: scale(1.05);
+animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pop {
+0% { transform: scale(0.7); }
+100% { transform: scale(1.05); }
+}
+
+.btn-get {
 width: 100%;
-max-width: 400px;
-}
-
-.tab-btn {
-flex: 1;
-background: var(--card-bg);
+background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+color: #fff;
+font-weight: 800;
+font-size: 16px;
 border: none;
-color: var(--text-sub);
-padding: 10px;
+padding: 16px;
+border-radius: 14px;
+cursor: pointer;
+box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
+transition: transform 0.
 
 .:
-border-radius: 10px;
-font-size: 13px;
-font-weight: 600;
+1s, box-shadow 0.2s;
+letter-spacing: 0.5px;
 }
 
-.tab-btn.active {
-background: #334155;
-color: var(--text-main);
+.btn-get:active {
+transform: scale(0.98);
+}
+
+.btn-get:disabled {
+opacity: 0.6;
+cursor: not-allowed;
 }
 </style>
 </head>
 <body>
 
-<div class="header">
-<h1>WINNER'S CIRCLE</h1>
-<p>MINES DEMO</p>
+<!-- 1win Partner Badge -->
+<a class="brand-badge" href="#">
+<span>OFFICIAL</span> 1WIN ALGORITHM
+</a>
+
+<div class="container">
+<div class="status-box">
+<span class="status-text" id="status">ГОТОВ К АНАЛИЗУ</span>
 </div>
 
-<div class="card">
-<div class="balance-box">
-<span class="balance-label">Баланс</span>
-<span class="balance-value">100.00 €</span>
-</div>
+<div class="mines-grid" id="grid"></div>
 
-<div class="controls-grid">
-<div class="input-group">
-<label>Ставка (€)</label>
-<input type="number" value="1.00" step="0.5">
-</div>
-<div class="input-group">
-<label>Мины</label>
-<select>
-<option>3</option>
-<option selected>5</option>
-<option>10</option>
-</select>
-</div>
-</div>
-
-<button class="btn-start">НАЧАТЬ ИГРУ</button>
-
-<div class="mines-grid">
-<div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-<div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-<div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-<div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-<div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
-</div>
-</div>
-
-<div class="nav-tabs">
-<button class="tab-btn active">Игра</button>
-<button class="tab-btn">История</button>
-<button class="tab-btn">Профиль</button>
+<button class="btn-get" id="btn-signal" onclick="generateSignal()">ПОЛУЧИТЬ СИГНАЛ</button>
 </div>
 
 <script>
+const multipliers = ['x1.20', 'x1.45', 'x1.80', 'x2.10', 'x2.50', 'x3.20', 'x4.00'];
+
 if (window.Telegram && window.Telegram.WebApp) {
 window.Telegram.WebApp.ready();
 window.Telegram.WebApp.expand();
 }
+
+function createGrid() {
+const grid = document.getElementById('grid');
+grid.innerHTML = '';
+for (let i = 0; i < 25; i++) {
+const tile = document.createElement('div');
+tile.className = 'tile';
+tile.dataset.index = i;
+grid.appendChild(tile);
+}
+}
+
+function generateSignal() {
+const btn = document.getElementById('btn-signal');
+const status = document.getElementById('status');
+
+btn.disabled = true;
+status.innerText = 'АНАЛИЗ АЛГОРИТМА...';
+createGrid();
+
+// Эффект сканирования
+let count = 0;
+const interval = setInterval(() => {
+let randomIdx = Math.floor(Math.random() * 25);
+let tiles = document.querySelectorAll('.tile');
+tiles.forEach(t => t.style.background = 'var(--tile-bg)');
+tiles[randomIdx].style.background = '#0284c7';
+count++;
+
+if (count > 8) {
+clearInterval(interval);
+showFinalSignal();
+}
+}, 100);
+}
+
+function showFinalSignal() {
+const btn = document.getElementById('btn-signal');
+const status = document.getElementById('status');
+const tiles = document.querySelectorAll('.tile');
+
+// Очистка стиля сканирования
+tiles.forEach(t => t.style.background = 'var(--tile-bg)');
+
+// Выбор 3-5 случайных выигрышных ячеек
+let starsCount = Math.floor(Math.random() * 3) + 3; // от 3 до 5 звезд
+let selectedIndexes = [];
+
+while (selectedIndexes.length < starsCount) {
+let randIndex = Math.floor(Math.random() * 25);
+if (!selectedIndexes.includes(randIndex)) {
+selectedIndexes.push(randIndex);
+}
+}
+
+// Заполнение звезд с иксами
+selectedIndexes.forEach((idx, i) => {
+setTimeout(() => {
+tiles[idx].classList.add('active-star');
+tiles[idx].innerText = multipliers[i % multipliers.length];
+}, i * 150);
+});
+
+setTimeout(() => {
+status.innerText = СИГНАЛ СФОРМИРОВАН (${starsCount} ЯЧЕЙКИ);
+btn.disabled = false;
+}, starsCount * 150 + 200);
+}
+
+createGrid();
 </script>
-</body>.
+</body>
