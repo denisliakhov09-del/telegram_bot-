@@ -37,7 +37,6 @@ min-height: 100vh;
 padding: 16px;
 }
 
-/* 1win Partner Badge */
 .brand-badge {
 position: fixed;
 top: 12px;
@@ -100,7 +99,6 @@ background: var(--card-bg);
 padding: 12px;
 border-radius: 16px;
 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-min-height: 280px;
 }
 
 .tile {
@@ -121,12 +119,6 @@ border: 1px solid rgba(255, 255, 255, 0.05);
 background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
 box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
 transform: scale(1.05);
-animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes pop {
-0% { transform: scale(0.7); }
-100% { transform: scale(1.05); }
 }
 
 .btn-get {
@@ -139,20 +131,18 @@ border: none;
 padding: 16px;
 border-radius: 14px;
 cursor: pointer;
-
-.:
 box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
-transition: transform 0.1s, box-shadow 0.2s;
+transition: transform 0.1s, opacity 0.2s;
 letter-spacing: 0.5px;
-touch-action: manipulation;
 }
 
 .btn-get:active {
 transform: scale(0.96);
-opacity: 0.9;
 }
 
 .btn-get:disabled {
+
+.:
 opacity: 0.5;
 cursor: not-allowed;
 }
@@ -160,7 +150,6 @@ cursor: not-allowed;
 </head>
 <body>
 
-<!-- 1win Partner Badge -->
 <a class="brand-badge" href="#">
 <span>OFFICIAL</span> 1WIN ALGORITHM
 </a>
@@ -172,121 +161,97 @@ cursor: not-allowed;
 
 <div class="mines-grid" id="grid"></div>
 
-<button class="btn-get" id="btn-signal">ПОЛУЧИТЬ СИГНАЛ</button>
+<button class="btn-get" id="btn-signal" onclick="runSignalAlgorithm()">ПОЛУЧИТЬ СИГНАЛ</button>
 </div>
 
 <script>
 const multipliers = ['x1.20', 'x1.45', 'x1.80', 'x2.10', 'x2.50', 'x3.20', 'x4.00'];
-let isProcessing = false;
+let busy = false;
 
-function createGrid() {
+function renderGrid() {
 const grid = document.getElementById('grid');
-if (!grid) return;
 grid.innerHTML = '';
 for (let i = 0; i < 25; i++) {
 const tile = document.createElement('div');
 tile.className = 'tile';
-tile.dataset.index = i;
 grid.appendChild(tile);
 }
 }
 
-function generateSignal() {
-if (isProcessing) return;
+function runSignalAlgorithm() {
+if (busy) return;
+busy = true;
 
 const btn = document.getElementById('btn-signal');
 const status = document.getElementById('status');
+const tiles = document.querySelectorAll('.tile');
 
-let tiles = document.querySelectorAll('.tile');
-if (tiles.length === 0) {
-createGrid();
-tiles = document.querySelectorAll('.tile');
-}
-
-isProcessing = true;
 btn.disabled = true;
 status.innerText = 'АНАЛИЗ АЛГОРИТМА...';
 
-// Очистка предыдущих результатов
+// Очистка ячеек
 tiles.forEach(t => {
 t.className = 'tile';
 t.innerText = '';
 t.style.background = 'var(--tile-bg)';
 });
 
-// Эффект сканирования
-let count = 0;
-const interval = setInterval(() => {
+// Эффект анализа
+let steps = 0;
+const timer = setInterval(() => {
 let randomIdx = Math.floor(Math.random() * 25);
 tiles.forEach(t => t.style.background = 'var(--tile-bg)');
 if (tiles[randomIdx]) {
 tiles[randomIdx].style.background = '#0284c7';
 }
-count++;
+steps++;
 
-if (count > 8) {
-clearInterval(interval);
-showFinalSignal();
+if (steps > 10) {
+clearInterval(timer);
+finishSignal();
 }
-}, 100);
+}, 80);
 }
 
-function showFinalSignal() {
+function finishSignal() {
 const btn = document.getElementById('btn-signal');
 const status = document.getElementById('status');
 const tiles = document.querySelectorAll('.tile');
 
 tiles.forEach(t => t.style.background = 'var(--tile-bg)');
 
-let starsCount = Math.floor(Math.random() * 3) + 3;
-let selectedIndexes = [];
+let count = Math.floor(Math.random() * 3) + 3; // 3-5 ячеек
+let picked = [];
 
-while (selectedIndexes.length < starsCount) {
-let randIndex = Math.floor(Math.random() * 25);
-if (!selectedIndexes.includes(randIndex)) {
-selectedIndexes.push(randIndex);
-}
+while (picked.length < count) {
+let r = Math.floor(Math.random() * 25);
+if (!picked.includes(r)) picked.push(r);
 }
 
-selectedIndexes.forEach((idx, i) => {
+picked.forEach((idx, i) => {
 setTimeout(() => {
 if (tiles[idx]) {
 tiles[idx].classList.add('active-star');
 tiles[idx].innerText = multipliers[i % multipliers.length];
 }
-}, i * 150);
+}, i * 120);
 });
 
 setTimeout(() => {
-status.innerText = СИГНАЛ СФОРМИРОВАН (${starsCount} ЯЧЕЙКИ);
+status.innerText = СИГНАЛ СФОРМИРОВАН (${count} ЯЧЕЙКИ);
 btn.disabled = false;
-isProcessing = false;
-}, starsCount * 150 + 200);
+busy = false;
+}, count * 120 + 150);
 }
 
-// Инициализация при загрузке
-function initApp() {
-if (window.Telegram && window.Telegram.
-
-.:
-WebApp) {
+// Инициализация при старте
+window.addEventListener('DOMContentLoaded', () => {
+if (window.Telegram && window.Telegram.WebApp) {
 window.Telegram.WebApp.ready();
 window.Telegram.WebApp.expand();
 }
-createGrid();
-
-const btn = document.getElementById('btn-signal');
-if (btn) {
-btn.addEventListener('click', generateSignal);
-btn.addEventListener('touchend', function(e) {
-e.preventDefault();
-generateSignal();
+renderGrid();
 });
-}
-}
-
-document.addEventListener('DOMContentLoaded', initApp);
-window.onload = initApp;
 </script>
 </body>
 </html>
