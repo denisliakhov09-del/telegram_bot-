@@ -3,8 +3,8 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>1win Mines Algorithm Bot</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>1win Mines Signal Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
@@ -13,7 +13,6 @@
 --accent-blue: #0284c7;
 --accent-green: #22c55e;
 --text-main: #f8fafc;
---text-sub: #94a3b8;
 --tile-bg: #334155;
 }
 
@@ -25,18 +24,17 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, A
 user-select: none;
 -webkit-user-select: none;
 -webkit-tap-highlight-color: transparent;
-touch-action: manipulation;
 }
 
-body {
+html, body {
+width: 100%;
+height: 100%;
 background-color: var(--bg-color);
 color: var(--text-main);
 display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: center;
-min-height: 100vh;
-padding: 16px;
 overflow: hidden;
 }
 
@@ -46,7 +44,7 @@ position: fixed;
 top: 12px;
 left: 12px;
 background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-color: #fff;
+color: #ffffff;
 font-size: 11px;
 font-weight: 800;
 padding: 6px 12px;
@@ -61,7 +59,7 @@ letter-spacing: 0.5px;
 }
 
 .brand-badge span {
-background: #fff;
+background: #ffffff;
 color: #0284c7;
 padding: 2px 5px;
 border-radius: 4px;
@@ -69,30 +67,31 @@ font-size: 9px;
 }
 
 .container {
-width: 100%;
-max-width: 380px;
+width: 90%;
+max-width: 360px;
 display: flex;
 flex-direction: column;
 align-items: center;
-gap: 16px;
+gap: 14px;
+margin: auto;
 }
 
 .status-box {
 background: var(--card-bg);
 border-radius: 12px;
-padding: 14px 20px;
+padding: 12px 16px;
 width: 100%;
 text-align: center;
 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-border: 1px solid rgba(255, 255, 255, 0.05);
+border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .status-text {
 font-size: 14px;
-font-weight: 700;
+font-weight: 800;
 color: #38bdf8;
 letter-spacing: 0.5px;
-transition: color 0.2s;
+text-transform: uppercase;
 }
 
 .mines-grid {
@@ -100,72 +99,70 @@ display: grid;
 grid-template-columns: repeat(5, 1fr);
 gap: 8px;
 width: 100%;
+aspect-ratio: 1;
 background: var(--card-bg);
 padding: 12px;
 border-radius: 16px;
 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-min-height: 280px;
+border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .tile {
-aspect-ratio: 1;
+width: 100%;
+height: 100%;
 background: var(--tile-bg);
-border-radius: 10px;
+border-radius: 8px;
 display: flex;
 align-items: center;
 justify-content: center;
 font-weight: 800;
-font-size: 13px;
-transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-color: #fff;
+font-size: 12px;
+color: #ffffff;
 border: 1px solid rgba(255, 255, 255, 0.05);
+transition: all 0.2s ease;
 }
 
+/* Загорающиеся открытые ячейки */
 .tile.active-star {
 background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-box-shadow: 0 0 15px rgba(34, 197, 94, 0.7);
-transform: scale(1.05);
+box-shadow: 0 0 15px rgba(34, 197, 94, 0.8);
+transform: scale(1.04);
 animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes pop {
 0% { transform: scale(0.6); }
-100% { transform: scale(1.05); }
+100% { transform: scale(1.04); }
 }
 
+.:
+/* ЯРКАЯ СИНЯЯ КНОПКА (Всегда видна и кликабельна) */
 .btn-get {
 width: 100%;
-
-.:
-background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-color: #fff;
+background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+color: #ffffff !important;
 font-weight: 800;
 font-size: 16px;
 border: none;
 padding: 16px;
 border-radius: 14px;
 cursor: pointer;
-box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
-transition: transform 0.1s, opacity 0.2s;
+box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
 letter-spacing: 0.5px;
-outline: none;
+text-transform: uppercase;
+-webkit-appearance: none;
+appearance: none;
 }
 
 .btn-get:active {
 transform: scale(0.96);
-}
-
-.btn-get:disabled {
-opacity: 0.5;
-cursor: not-allowed;
-transform: none;
+opacity: 0.9;
 }
 </style>
 </head>
 <body>
 
-<!-- 1win Partner Badge -->
-<a class="brand-badge" href="#" onclick="triggerHaptic()">
+<a class="brand-badge" href="#">
 <span>OFFICIAL</span> 1WIN ALGORITHM
 </a>
 
@@ -174,7 +171,6 @@ transform: none;
 <span class="status-text" id="status">ГОТОВ К АНАЛИЗУ</span>
 </div>
 
-<!-- 25 ячеек в разметке -->
 <div class="mines-grid" id="grid">
 <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
 <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
@@ -187,139 +183,96 @@ transform: none;
 </div>
 
 <script>
-const multipliers = ['x1.20', 'x1.45', 'x1.80', 'x2.10', 'x2.50', 'x3.20', 'x4.00'];
-let isProcessing = false;
+const multipliers = ['x1.24', 'x1.48', 'x1.85', 'x2.22', 'x2.96', 'x3.70', 'x4.45'];
+let running = false;
 
-// Telegram WebApp Init
-const tg = window.Telegram ? window.Telegram.WebApp : null;
-if (tg) {
-tg.ready();
-tg.expand();
+// Telegram WebApp
+if (window.Telegram && window.Telegram.WebApp) {
+window.Telegram.WebApp.ready();
+window.Telegram.WebApp.expand();
 }
 
-function triggerHaptic(type = 'impact', style = 'medium') {
-if (tg && tg.HapticFeedback) {
-if (type === 'impact') tg.HapticFeedback.impactOccurred(style);
-if (type === 'notification') tg.HapticFeedback.notificationOccurred(style);
+function triggerVibration() {
+if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
 }
 }
 
-function ensureGrid() {
-const grid = document.getElementById('grid');
-if (!grid) return;
-if (grid.children.length !== 25) {
-grid.innerHTML = '';
-for (let i = 0; i < 25; i++) {
-const tile = document.createElement('div');
-tile.className = 'tile';
-grid.appendChild(tile);
-}
-}
-}
+function startSignalGeneration() {
+if (running) return;
+running = true;
+triggerVibration();
 
-function executeSignal() {
-if (isProcessing) return;
-isProcessing = true;
-triggerHaptic('impact', 'medium');
-
-ensureGrid();
-
-const btn = document.getElementById('btn-signal');
 const status = document.getElementById('status');
 const tiles = document.querySelectorAll('.tile');
 
-btn.disabled = true;
 status.style.color = '#38bdf8';
 status.innerText = 'АНАЛИЗ АЛГОРИТМА...';
 
-// Полная очистка состояния
+// Очистка всех ячеек
 tiles.forEach(t => {
 t.className = 'tile';
 t.innerText = '';
 t.style.background = 'var(--tile-bg)';
 });
 
-let steps = 0;
-const scanInterval = setInterval(() => {
-try {
-let randIndex = Math.floor(Math.random() * 25);
+// Эффект подсвечивания при сканировании
+let step = 0;
+const timer = setInterval(() => {
+let r = Math.floor(Math.random() * 25);
 tiles.forEach(t => t.style.background = 'var(--tile-bg)');
-if (tiles[randIndex]) {
-tiles[randIndex].style.background = '#0284c7';
+if (tiles[r]) {
+tiles[r].style.background = '#0284c7';
 }
-steps++;
+step++;
 
-if (steps > 12) {
-
-.:
-clearInterval(scanInterval);
-renderResults();
+if (step > 10) {
+clearInterval(timer);
+showFinalSignal();
 }
-} catch (e) {
-clearInterval(scanInterval);
-resetState();
-}
-}, 70);
+}, 80);
 }
 
-function renderResults() {
-const btn = document.getElementById('btn-signal');
+function showFinalSignal() {
 const status = document.getElementById('status');
 const tiles = document.querySelectorAll('.tile');
 
 tiles.forEach(t => t.style.background = 'var(--tile-bg)');
 
-let count = Math.floor(Math.random() * 3) + 3; // От 3 до 5 сигналов
-let selectedIndexes = [];
+let count = Math.floor(Math.random() * 3) + 3; // от 3 до 5 звезд
+let selected = [];
 
-while (selectedIndexes.length < count) {
-let r = Math.floor(Math.random() * 25);
-if (!selectedIndexes.includes(r)) selectedIndexes.push(r);
+while (selected.length < count) {
+let rand = Math.floor(Math.random() * 25);
+if (!selected.includes(rand)) selected.push(rand);
 }
 
-selectedIndexes.forEach((idx, i) => {
+selected.forEach((idx, i) => {
 setTimeout(() => {
+
+.:
 if (tiles[idx]) {
 tiles[idx].classList.add('active-star');
 tiles[idx].innerText = multipliers[i % multipliers.length];
-triggerHaptic('impact', 'light');
+triggerVibration();
 }
-}, i * 140);
+}, i * 150);
 });
 
 setTimeout(() => {
 status.style.color = '#22c55e';
 status.innerText = СИГНАЛ СФОРМИРОВАН (${count} ЯЧЕЙКИ);
-triggerHaptic('notification', 'success');
-btn.disabled = false;
-isProcessing = false;
-}, count * 140 + 200);
+running = false;
+}, count * 150 + 200);
 }
 
-function resetState() {
+// Привязка событий клика и тапа
 const btn = document.getElementById('btn-signal');
-const status = document.getElementById('status');
-status.innerText = 'ГОТОВ К АНАЛИЗУ';
-btn.disabled = false;
-isProcessing = false;
-}
-
-// Единственная надежная точка привязки кликов
-function initListeners() {
-ensureGrid();
-const btn = document.getElementById('btn-signal');
-if (btn) {
-btn.removeEventListener('click', executeSignal);
-btn.addEventListener('click', executeSignal);
-}
-}
-
-if (document.readyState === 'loading') {
-document.addEventListener('DOMContentLoaded', initListeners);
-} else {
-initListeners();
-}
-window.onload = initListeners;
+btn.addEventListener('click', startSignalGeneration);
+btn.addEventListener('touchstart', function(e) {
+e.preventDefault();
+startSignalGeneration();
+});
 </script>
 </body>
 </html>
