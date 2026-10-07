@@ -76,7 +76,7 @@ gap: 16px;
 .status-box {
 background: var(--card-bg);
 border-radius: 12px;
-padding: 12px 20px;
+padding: 14px 20px;
 width: 100%;
 text-align: center;
 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -99,6 +99,7 @@ background: var(--card-bg);
 padding: 12px;
 border-radius: 16px;
 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+min-height: 250px;
 }
 
 .tile {
@@ -110,14 +111,13 @@ align-items: center;
 justify-content: center;
 font-weight: 800;
 font-size: 13px;
-cursor: pointer;
 transition: all 0.2s ease;
 color: #fff;
 border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .tile.active-star {
-background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
 box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
 transform: scale(1.05);
 animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -139,10 +139,9 @@ padding: 16px;
 border-radius: 14px;
 cursor: pointer;
 box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
-transition: transform 0.
 
 .:
-1s, box-shadow 0.2s;
+transition: transform 0.1s, box-shadow 0.2s;
 letter-spacing: 0.5px;
 }
 
@@ -176,13 +175,9 @@ cursor: not-allowed;
 <script>
 const multipliers = ['x1.20', 'x1.45', 'x1.80', 'x2.10', 'x2.50', 'x3.20', 'x4.00'];
 
-if (window.Telegram && window.Telegram.WebApp) {
-window.Telegram.WebApp.ready();
-window.Telegram.WebApp.expand();
-}
-
 function createGrid() {
 const grid = document.getElementById('grid');
+if (!grid) return;
 grid.innerHTML = '';
 for (let i = 0; i < 25; i++) {
 const tile = document.createElement('div');
@@ -195,18 +190,33 @@ grid.appendChild(tile);
 function generateSignal() {
 const btn = document.getElementById('btn-signal');
 const status = document.getElementById('status');
+const tiles = document.querySelectorAll('.tile');
+
+if (tiles.length === 0) {
+createGrid();
+}
 
 btn.disabled = true;
 status.innerText = 'АНАЛИЗ АЛГОРИТМА...';
-createGrid();
+
+// Сброс старых результатов
+document.querySelectorAll('.tile').forEach(t => {
+t.className = 'tile';
+t.innerText = '';
+t.style.background = 'var(--tile-bg)';
+});
 
 // Эффект сканирования
 let count = 0;
 const interval = setInterval(() => {
+let currentTiles = document.querySelectorAll('.tile');
+if (currentTiles.length === 0) return;
+
 let randomIdx = Math.floor(Math.random() * 25);
-let tiles = document.querySelectorAll('.tile');
-tiles.forEach(t => t.style.background = 'var(--tile-bg)');
-tiles[randomIdx].style.background = '#0284c7';
+currentTiles.forEach(t => t.style.background = 'var(--tile-bg)');
+if (currentTiles[randomIdx]) {
+currentTiles[randomIdx].style.background = '#0284c7';
+}
 count++;
 
 if (count > 8) {
@@ -221,11 +231,9 @@ const btn = document.getElementById('btn-signal');
 const status = document.getElementById('status');
 const tiles = document.querySelectorAll('.tile');
 
-// Очистка стиля сканирования
 tiles.forEach(t => t.style.background = 'var(--tile-bg)');
 
-// Выбор 3-5 случайных выигрышных ячеек
-let starsCount = Math.floor(Math.random() * 3) + 3; // от 3 до 5 звезд
+let starsCount = Math.floor(Math.random() * 3) + 3; // от 3 до 5 ячеек
 let selectedIndexes = [];
 
 while (selectedIndexes.length < starsCount) {
@@ -235,11 +243,12 @@ selectedIndexes.push(randIndex);
 }
 }
 
-// Заполнение звезд с иксами
 selectedIndexes.forEach((idx, i) => {
 setTimeout(() => {
+if (tiles[idx]) {
 tiles[idx].classList.add('active-star');
 tiles[idx].innerText = multipliers[i % multipliers.length];
+}
 }, i * 150);
 });
 
@@ -249,6 +258,19 @@ btn.disabled = false;
 }, starsCount * 150 + 200);
 }
 
+// Автоматический запуск при загрузке
+document.addEventListener('DOMContentLoaded', () => {
+if (window.Telegram && window.Telegram.WebApp) {
+window.Telegram.WebApp.ready();
+window.
+
+.:
+Telegram.WebApp.expand();
+}
 createGrid();
+});
+
+window.onload = createGrid;
 </script>
 </body>
+</html>
